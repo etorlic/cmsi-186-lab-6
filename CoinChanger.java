@@ -5,14 +5,24 @@ public abstract class CoinChanger {
     abstract public int minCoins(int amount, Set<Integer> denominations);
 
     private static void checkArguments(int amount, Set<Integer> denominations) {
-        // TODO: Do all of your checks here, according to the lab instructions.
-        // Anything wrong? Throw an IllegalArgumentException.
-        //
-        // Error situations and messages are:
-        //   "Amount must be at least 1"
-        //   "At least one denomination is required"
-        //   "Denominations must all be positive"
-        //   "Denominations must have a 1-unit coin"
+        if (amount < 1) {
+            throw new IllegalArgumentException("Amount must be at least 1");
+        }
+        if (denominations.size() < 1) {
+            throw new IllegalArgumentException("At least one denomination is required");
+        }
+        var oneUnitCoin = false; //boolean to say whether there is a 1-unit coin or not
+        for (var d : denominations) {
+            if (d < 0) {
+                throw new IllegalArgumentException("Denominations must all be positive");
+            }
+            if (d != 1) {
+                oneUnitCoin = false;
+            }
+        }
+        if (oneUnitCoin == false) {
+            throw new IllegalArgumentException("Denominations must have a 1-unit coin");
+        }
     }
 
     public static class TopDown extends CoinChanger {
