@@ -33,7 +33,7 @@ public abstract class CoinChanger {
 
             var minCoins = Integer.MAX_VALUE;
             for (var d : denominations) {
-                var newAmount = minCoins(amount - d, denominations);
+                var newAmount += minCoins(amount - d, denominations);
 
                 if (newAmount < minCoins) {
                     minCoins = newAmount;
