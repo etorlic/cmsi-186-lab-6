@@ -26,6 +26,12 @@ public abstract class CoinChanger {
         public int minCoins(int amount, Set<Integer> denominations) {
             checkArguments(amount, denominations);
             var results = new HashMap<Integer, Integer>();
+            if (amount == 0) {
+                return 1;
+            }
+            if (amount < 0) {
+                return 0;
+            }
 
             if (results.containsKey(amount)) {
                 return results.get(amount);
@@ -33,7 +39,7 @@ public abstract class CoinChanger {
 
             var minCoins = Integer.MAX_VALUE;
             for (var d : denominations) {
-                var newAmount += minCoins(amount - d, denominations);
+                var newAmount = minCoins(amount - d, denominations);
 
                 if (newAmount < minCoins) {
                     minCoins = newAmount;
@@ -53,7 +59,7 @@ public abstract class CoinChanger {
     public static class BottomUp extends CoinChanger {
         public int minCoins(int amount, Set<Integer> denominations) {
             checkArguments(amount, denominations);
-            
+
             var table = new int[amount + 1];
 
             // index 0 is known because it takes 0 coins for 0 amount
