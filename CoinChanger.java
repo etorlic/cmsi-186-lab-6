@@ -1,6 +1,6 @@
 import java.util.Set;
 import java.util.HashMap;
-// TODO of course, you may wish to import more things...
+import java.util.Arrays;
 
 public abstract class CoinChanger {
     abstract public int minCoins(int amount, Set<Integer> denominations);
@@ -23,64 +23,52 @@ public abstract class CoinChanger {
     }
 
     public static class TopDown extends CoinChanger {
+        private HashMap<String, Integer> results = new HashMap<>();
         public int minCoins(int amount, Set<Integer> denominations) {
             checkArguments(amount, denominations);
-            var results = new HashMap<Integer, Integer>();
-            if (amount == 0) {
-                return 1;
+            //key for hashmap
+            var key = amount + "" + denominations; 
+            //returns value of a result previously computed
+            if (results.containsKey(key)) {
+                return results.get(key);
             }
-            if (amount < 0) {
-                return 0;
-            }
-
-            if (results.containsKey(amount)) {
-                return results.get(amount);
-            }
-
-            var minCoins = Integer.MAX_VALUE;
+            //recursive for-loop
+            var minNumCoins = Integer.MAX_VALUE;
             for (var d : denominations) {
-                var newAmount = minCoins(amount - d, denominations);
-
-                if (newAmount < minCoins) {
-                    minCoins = newAmount;
+                if (d == amount) {
+                    minNumCoins = 0;
+                }
+                else if (d < amount) {
+                    minNumCoins = Math.min(minNumCoins, minCoins(amount - d, denominations)); 
                 }
             }
-
-            if (!(minCoins == Integer.MAX_VALUE)) {
-                minCoins += 1;
-            }
-
-            results.put(amount, minCoins);
-
-            return minCoins;
+            //stores minimum coin in a hashmap at the key
+            results.put(key, 1 + minNumCoins);
+            return results.get(key);
         }
     }
 
     public static class BottomUp extends CoinChanger {
         public int minCoins(int amount, Set<Integer> denominations) {
             checkArguments(amount, denominations);
-
+            //table to store minCoins at each index
             var table = new int[amount + 1];
-
-            // index 0 is known because it takes 0 coins for 0 amount
+            
+            //fills table with arbitrary large num
+            //and known num of coins at index 0
+            Arrays.fill(table, amount + 1);
             table[0] = 0;
 
-            // an arbitrary value to fill the rest of the table
-            for (var t = 1; t <= amount; t++) {
-                table[t] = amount + 1;
-            }
-
             // fills the table up from index 1 and onward with 
-            // mininimum coins for each index
+            // minimum coins for each index
             for (var i = 1; i <= amount; i++) {
                 for (var d : denominations) {
                     if (i - d < 0) {
-                        break;
+                        continue;
                     }
                     table[i] = Math.min(table[i - d] + 1, table[i]);
                 }
             }
-
             return table[amount];
         }
     }
